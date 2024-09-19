@@ -13,13 +13,21 @@ import {
   StyledSelect,
   Option,
 } from './App.styled';
+import Schedule from 'components/Schedule/Schedule';
 
 export const App = () => {
   const [isActive, setIsActive] = useState(false);
+  const [isScheduleActive, setIsScheduleActive] = useState(false);
 
   const addTask = () => {
     setIsActive(!isActive);
+    setIsScheduleActive(false);
   };
+
+  const openSchedule = () => {
+    setIsScheduleActive(!isScheduleActive);
+    setIsActive(false)
+  }
 
   return (
     <AppWrapper>
@@ -27,7 +35,12 @@ export const App = () => {
         <MainHeader>week planer</MainHeader>
       </DevWrapper>
       <ButtonWrapper>
-        <AddButton onClick={addTask}>Add task</AddButton>
+        <AddButton onClick={addTask}>
+          {isActive ? 'Submit' : 'Add task'}
+        </AddButton>
+        <AddButton onClick={openSchedule}>
+          {isScheduleActive ? 'Close Schedule' : 'Open schedule'}
+        </AddButton>
       </ButtonWrapper>
       {isActive && (
         <FormWrapper>
@@ -49,6 +62,7 @@ export const App = () => {
           </Form>
         </FormWrapper>
       )}
+      {isScheduleActive && <Schedule />}
     </AppWrapper>
   );
 };

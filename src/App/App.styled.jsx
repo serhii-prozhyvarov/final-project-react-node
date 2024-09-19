@@ -28,9 +28,16 @@ export const FormWrapper = styled.div`
 
 `;
 
+export const ScheduleWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+
+
 export const AddButton = styled.button`
   cursor: pointer;
   margin-bottom: 10px;
+  margin-left: 30px;
   min-width: 90px;
   font-family: 'Montserrat', sans-serif;
   background-color: #4aa412;
