@@ -1,13 +1,5 @@
-import React, { useState } from 'react';
-import {
-  mondayTasks as initialMondayTasks,
-  tuesdayTasks as initialTuesdayTasks,
-  wednesdayTasks as initialWednesdayTasks,
-  thursdayTasks as initialThursdayTasks,
-  fridayTasks as initialFridayTasks,
-  saturdayTasks as initialSaturdayTasks,
-  sundayTasks as initialSundayTasks,
-} from '../../schedule';
+import React from 'react';
+
 import {
   StyledUl,
   ScheduleWrapper,
@@ -22,61 +14,30 @@ import {
   IconSpan,
 } from './Schedule.styled';
 
-const Schedule = () => {
-  const [mondayTasks, setMondayTasks] = useState(initialMondayTasks);
-  const [tuesdayTasks, setTuesdayTasks] = useState(initialTuesdayTasks);
-  const [wednesdayTasks, setWednesdayTasks] = useState(initialWednesdayTasks);
-  const [thursdayTasks, setThursdayTasks] = useState(initialThursdayTasks);
-  const [fridayTasks, setFridayTasks] = useState(initialFridayTasks);
-  const [saturdayTasks, setSaturdayTasks] = useState(initialSaturdayTasks);
-  const [sundayTasks, setSundayTasks] = useState(initialSundayTasks);
-
-  const handleDeleteTask = (day, taskId) => {
-    switch (day) {
-      case 'Monday':
-        setMondayTasks(mondayTasks.filter(task => task.id !== taskId));
-        break;
-      case 'Tuesday':
-        setTuesdayTasks(tuesdayTasks.filter(task => task.id !== taskId));
-        break;
-      case 'Wednesday':
-        setWednesdayTasks(wednesdayTasks.filter(task => task.id !== taskId));
-        break;
-      case 'Thursday':
-        setThursdayTasks(thursdayTasks.filter(task => task.id !== taskId));
-        break;
-      case 'Friday':
-        setFridayTasks(fridayTasks.filter(task => task.id !== taskId));
-        break;
-      case 'Saturday':
-        setSaturdayTasks(saturdayTasks.filter(task => task.id !== taskId));
-        break;
-      case 'Sunday':
-        setSundayTasks(sundayTasks.filter(task => task.id !== taskId));
-        break;
-      default:
-        break;
-    }
-  };
-
+const Schedule = ({ mySchedule, handleDeleteTask }) => {
   const days = [
-    { name: 'Monday', tasks: mondayTasks },
-    { name: 'Tuesday', tasks: tuesdayTasks },
-    { name: 'Wednesday', tasks: wednesdayTasks },
-    { name: 'Thursday', tasks: thursdayTasks },
-    { name: 'Friday', tasks: fridayTasks },
-    { name: 'Saturday', tasks: saturdayTasks },
-    { name: 'Sunday', tasks: sundayTasks },
+    'monday',
+    'tuesday',
+    'wednesday',
+    'thursday',
+    'friday',
+    'saturday',
+    'sunday',
   ];
+
+  const groupedTasks = days.reduce((acc, day) => {
+    acc[day] = mySchedule.filter(task => task.day === day);
+    return acc;
+  }, {});
 
   return (
     <ScheduleWrapper>
       <StyledUl>
         {days.map(day => (
-          <StyledLi key={day.name}>
-            <StyledH2>{day.name}</StyledH2>
-            {day.tasks.map((task, index) => (
-              <TaskDiv key={task.id}>
+          <StyledLi key={day}>
+            <StyledH2>{day.charAt(0).toUpperCase() + day.slice(1)}</StyledH2>
+            {groupedTasks[day].map((task, index) => (
+              <TaskDiv key={task._id}>
                 <StyledTaskName>
                   <StyledTaskNumber>{index + 1}.</StyledTaskNumber>
                   {task.name}
@@ -88,7 +49,7 @@ const Schedule = () => {
                       ✏️
                     </IconSpan>
                   </Button>
-                  <Button onClick={() => handleDeleteTask(day.name, task.id)}>
+                  <Button onClick={() => handleDeleteTask(task._id)}>
                     <IconSpan role="img" aria-label="delete">
                       🗑️
                     </IconSpan>
