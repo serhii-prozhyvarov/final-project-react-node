@@ -1,5 +1,4 @@
 import React from 'react';
-
 import {
   StyledUl,
   ScheduleWrapper,
@@ -14,7 +13,7 @@ import {
   IconSpan,
 } from './Schedule.styled';
 
-const Schedule = ({ mySchedule, handleDeleteTask }) => {
+const Schedule = ({ mySchedule, handleDeleteTask, handleEditTask }) => {
   const days = [
     'monday',
     'tuesday',
@@ -44,7 +43,7 @@ const Schedule = ({ mySchedule, handleDeleteTask }) => {
                 </StyledTaskName>
                 <StyledP>{task.description}</StyledP>
                 <ButtonContainer>
-                  <Button>
+                  <Button onClick={() => handleEditTask(task)}>
                     <IconSpan role="img" aria-label="edit">
                       ✏️
                     </IconSpan>

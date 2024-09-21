@@ -3,23 +3,18 @@ import axios from 'axios';
 import {
   AddButton,
   AppWrapper,
-  Option,
   ButtonWrapper,
   DevWrapper,
-  Form,
-  FormWrapper,
-  Input,
   MainHeader,
-  StyledSelect,
-  Textarea,
-  Text,
 } from './App.styled';
 import Schedule from 'components/Schedule/Schedule';
+import AddForm from 'components/Form/Form';
 
 export const App = () => {
   const [isActive, setIsActive] = useState(false);
   const [isScheduleActive, setIsScheduleActive] = useState(false);
   const [mySchedule, setMySchedule] = useState([]);
+  const [editingTaskId, setEditingTaskId] = useState(null);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [day, setDay] = useState('monday');
@@ -33,22 +28,57 @@ export const App = () => {
     fetchTasks();
   }, []);
 
-  const addTask = async e => {
+  const addOrUpdateTask = async e => {
     e.preventDefault();
     if (!title || !description) return;
 
-    const newTask = { name: title, description, day };
-    const response = await axios.post('http://localhost:5000/tasks', newTask);
-    setMySchedule([...mySchedule, response.data]);
-    setTitle('');
-    setDescription('');
-    setDay('monday');
-    setIsActive(false);
+    const taskData = { name: title, description, day };
+
+    if (editingTaskId) {
+      const response = await axios.put(
+        `http://localhost:5000/tasks/${editingTaskId}`,
+        taskData
+      );
+      setMySchedule(
+        mySchedule.map(task =>
+          task._id === editingTaskId ? response.data : task
+        )
+      );
+    } else {
+      const response = await axios.post(
+        'http://localhost:5000/tasks',
+        taskData
+      );
+      setMySchedule([...mySchedule, response.data]);
+    }
+
+    resetForm();
+  };
+
+  const toggleTaskfrom = () => {
+    setIsActive(!isActive)
+
+  }
+
+  const handleEditTask = task => {
+    setEditingTaskId(task._id);
+    setTitle(task.name);
+    setDescription(task.description);
+    setDay(task.day);
+    setIsActive(true);
   };
 
   const handleDeleteTask = async taskId => {
     await axios.delete(`http://localhost:5000/tasks/${taskId}`);
     setMySchedule(mySchedule.filter(task => task._id !== taskId));
+  };
+
+  const resetForm = () => {
+    setTitle('');
+    setDescription('');
+    setDay('monday');
+    setEditingTaskId(null);
+    setIsActive(false);
   };
 
   const openSchedule = () => {
@@ -62,37 +92,31 @@ export const App = () => {
         <MainHeader>week planner</MainHeader>
       </DevWrapper>
       <ButtonWrapper>
-        <AddButton onClick={() => setIsActive(true)}>Add task</AddButton>
+        <AddButton onClick={toggleTaskfrom}>
+          {isActive ? 'Close task' : 'Add task'}
+        </AddButton>
         <AddButton onClick={openSchedule}>
           {isScheduleActive ? 'Close Schedule' : 'Open schedule'}
         </AddButton>
       </ButtonWrapper>
       {isActive && (
-        <FormWrapper>
-          <Form onSubmit={addTask}>
-            <Text>Choose day</Text>
-            <StyledSelect value={day} onChange={e => setDay(e.target.value)}>
-              <Option value="monday">Monday</Option>
-              <Option value="tuesday">Tuesday</Option>
-              <Option value="wednesday">Wednesday</Option>
-              <Option value="thursday">Thursday</Option>
-              <Option value="friday">Friday</Option>
-              <Option value="saturday">Saturday</Option>
-              <Option value="sunday">Sunday</Option>
-            </StyledSelect>
-            <Text>Title</Text>
-            <Input value={title} onChange={e => setTitle(e.target.value)} />
-            <Text>Description</Text>
-            <Textarea
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-            />
-            <AddButton type="submit">Submit</AddButton>
-          </Form>
-        </FormWrapper>
+        <AddForm
+          addOrUpdateTask={addOrUpdateTask}
+          editingTaskId={editingTaskId}
+          day={day}
+          setDay={setDay}
+          title={title}
+          setTitle={setTitle}
+          description={description}
+          setDescription={setDescription}
+        />
       )}
       {isScheduleActive && (
-        <Schedule mySchedule={mySchedule} handleDeleteTask={handleDeleteTask} />
+        <Schedule
+          mySchedule={mySchedule}
+          handleDeleteTask={handleDeleteTask}
+          handleEditTask={handleEditTask}
+        />
       )}
     </AppWrapper>
   );

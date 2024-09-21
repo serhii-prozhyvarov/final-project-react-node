@@ -1,4 +1,3 @@
-// server.js
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -17,7 +16,7 @@ const mongoURI =
   'mongodb+srv://Serhii:O0vFMqDPPPL2o8JB@canshecode.arnwo.mongodb.net/?retryWrites=true&w=majority&appName=CanSheCode'; 
 mongoose
   .connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('MongoDB подключен'))
+  .then(() => console.log('MongoDB connected'))
   .catch(err => console.log(err));
 
 
@@ -53,5 +52,5 @@ app.delete('/tasks/:id', async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Сервер запущен на порту ${PORT}`);
+  console.log(`Server start on port ${PORT}`);
 });
